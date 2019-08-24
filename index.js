@@ -34,7 +34,7 @@ async function main () {
     lines = [],
   }) => {
     const levelPrefix = levels.join('.').replace(/(\.0)*$/, '')
-    const id = levelPrefix + '_' + title.replace(/[ \/:,.]+/g, '_').substr(0, 12)
+    const id = levelPrefix + '_' + title.replace(/[ \/:,.]+/g, '_')
     console.log(`[${levelPrefix}] ${title}`)
     return {
       levels,
@@ -68,6 +68,7 @@ async function main () {
           })
         }
         break;
+    /*
       case '###':
         if (section.lines.length === 1) {
           section.lines.push(line)
@@ -80,6 +81,7 @@ async function main () {
           })
         }
         break;
+    */
       default:
         section.lines.push(line)
         break;
@@ -87,6 +89,7 @@ async function main () {
   }
   
   const wordMaps = {} // map from section id to map of word-frequencies
+  const imageMap = {} // map from images to section ids
     
   for (const section of sections) {
     const {
@@ -94,13 +97,13 @@ async function main () {
       title,
       lines
     } = section
-    let body = lines.join('\n')
+    let body = lines.join('\n\n')
     // TODO process images
-    // - add captions if they are missing
+    // - add alt text if missing
     // - consider renaming images currently named "Dragged|pasted|Screen"
-    // - consider processing pngs into jpgs
     const images = body.match(/\!\[[^\n]*\]\([^\n]*\)/g)
-    body = body.replace(/(\!\[[^\n]*\]\([^\n]*)(\.png|\.pdf)\)/g, '\1.jpg)')
+    body = body.replace(/(\!\[[^\]]*?\]\(.*?)(\.png|\.pdf|\.jpeg)\)/g, '\n$1.jpg)\n')
+    body = body.replace(/\n\s*/g, '\n\n')
     // if (images) console.log(id, images.length)
     const wordMap = (body.match(/[\w-]+/g) || [])
       .filter(word => word.length > 3)
@@ -109,18 +112,59 @@ async function main () {
         acc[word] = acc[word] ? acc[word] + 1 : 1;
         return acc;
       }, {})
+  
+    
+    const imageFiles = (body.match(/(\!\[[^\]]*?\]\([^())]*?\.jpg)\)/g) || [])
+			.map(link => link.match(/\((.*)\)/)[1])
+		
+		imageFiles.forEach(imageFile => {
+			if (!imageMap[imageFile]) {
+				imageMap[imageFile] = [id]
+			} else if (!imageMap[imageFile].includes(id)) {
+				imageMap[imageFile].push(id)
+			}
+		});
     
     wordMaps[id] = wordMap;
     
     writeFile(targetPath + id + '.md', body, 'utf8')
   }
+  writeFile(targetPath + 'wordMap.json', JSON.stringify(wordMaps, false, 2), 'utf8')
+  
+	// b8r documentation.json format
+  const documentation = sections.reduce((chapters, section) => {
+  	const name = section.title
+  	const path = section.id + '.md'
+  	if (section.levels[1] === 0 || chapters.length === 0) {
+  		chapters.unshift({
+  			title: name,
+  			parts: [{
+  				name,
+  				path
+  			}]
+  		})
+  	} else {
+  		chapters[0].parts.push({
+				name,
+				path
+  		})
+  	}
+  	return chapters
+  }, []).reverse()
+  writeFile(targetPath + 'documentation.json', JSON.stringify(documentation, false, 2), 'utf8')
   
   const imageFiles = (await readdir(path)).filter(file => file.match(/(\.png|\.pdf|\.jpeg|\.jpg)$/))
   imageFiles.forEach(file => {
     const sourcePath = path + file
-    const destPath = targetPath + file.replace(/\.\w+$/, '.jpg')
-    exec(`sips -s format jpeg "${sourcePath}" --out "${destPath}"`)
+    const convertedFile = file.replace(/\.\w+$/, '.jpg')
+    const destPath = targetPath + convertedFile
+    if (imageMap[convertedFile] || imageMap[escape(convertedFile)]) {
+			exec(`sips -s format jpeg "${sourcePath}" --out "${destPath}"`)
+    } else {
+    	console.log(file, 'is not used')
+    }
   })
+  writeFile(targetPath + 'imageMap.json', JSON.stringify(imageMap, false, 2), 'utf8')
 }
 
 main();
