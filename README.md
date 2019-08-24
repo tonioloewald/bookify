@@ -1,6 +1,6 @@
 # bookify
 
-I was a long-time fan of the Ulysses word-processor until they switched to a subscription pricing model while conspicuously failing to deliver useful new 
+I was a long-time fan of the [Ulysses](https://ulysses.app/) word-processor until they switched to a [subscription pricing model](https://www.youtube.com/watch?v=oHg5SJYRHA0) while conspicuously failing to deliver useful new 
 features.
 
 This tool was written specifically to rescue a [large book](https://loewald.com/c3dbook) from Ulysses, but may eventually be made generic. Right now it's hardwired to run on a directory called `Learn 3D` that's in the same directory as the repo, i.e.
