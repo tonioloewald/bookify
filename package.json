@@ -1,0 +1,19 @@
+{
+  "name": "bookify",
+  "version": "1.0.0",
+  "description": "nodejs tools for creating ebooks from markdown",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "markdown",
+    "publishing",
+    "nodejs"
+  ],
+  "author": "Tonio Loewald",
+  "license": "ISC",
+  "dependencies": {
+    "promise-fs": "^2.1.1"
+  }
+}
