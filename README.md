@@ -41,6 +41,7 @@ Three additional files will be created:
 ## TODO
 
 - Allow user to specify the target folder (rather than be forced to replace `Learn 3D` in the script or only process files in folders named `Learn 3D`)
-- Implement a book-centric version of `documentation.component.html` that supports free text search and image lookup (and doesn't run background unit tests)
+- Implement `book.component.html` -- a book-centric version of `documentation.component.html` -- that supports free text search and image lookup (and doesn't run background unit tests)
+- Create an index.html file that pulls `b8r.js` and `book.component.html` described above from `bindinator.com` and allows you to host books as **github pages**.
 - Possibly build a `b8r-native` app around this and provide edit functionality. Build something like Ulysses with an actual table editor, decent image-management tools, etc. etc.
 - Figure out how to generate an ePub either from the command-line and/or on-the-fly in the browser
