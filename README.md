@@ -22,21 +22,18 @@ npm run test
 ```
 
 The script will create a subdirectory of `Learn 3D` called `bookified` that
-contains a broken up version of `index.md` where every H1 starts a new chapter
-and every H2 after the first breaks a new section.
+contains a broken up version of `index.md` where every `<H1>` starts a new chapter
+and every `<H2>` after the first breaks a new section.
 
 All the images referred to in `index.md` will have been converted to `.jpg` 
 (using `sips`) and the references to those images updated in the markdown.
 
-Three additional files will be created:
+**Three additional files** will be created:
 
-- `documentation.json` is a table of contents. This file is compatible with
-  [bindinator's](https://bindinator.com) documentation component.
+- `documentation.json` is a table of contents. This file is compatible with [bindinator's](https://bindinator.com) documentation component.
 - `imageMap.json` is a map of images to the sections containing them. The idea of
-  this file is to allow a table of figures and the ability to browse images and 
-  jump to the section containing them.
-- `wordMap.json` is a map of sections to the words appearing in them. The purpose
-  of this file is to ease the implementation of fast free text search.
+  this file is to allow a table of figures and the ability to **browse images** and implement a visual index.
+- `wordMap.json` is a map of sections to the words appearing in them. The purpose of this file is to ease the implementation of **fast free text search**.
   
 ## TODO
 
