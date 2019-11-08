@@ -34,7 +34,7 @@ async function main () {
     lines = [],
   }) => {
     const levelPrefix = levels.join('.').replace(/(\.0)*$/, '')
-    const id = levelPrefix + '_' + title.replace(/[ \/:,.]+/g, '_')
+    const id = levelPrefix + '_' + title.replace(/[^\w]+/g, '_').replace(/_$/, '')
     console.log(`[${levelPrefix}] ${title}`)
     return {
       levels,
@@ -115,15 +115,15 @@ async function main () {
   
     
     const imageFiles = (body.match(/(\!\[[^\]]*?\]\([^())]*?\.jpg)\)/g) || [])
-			.map(link => link.match(/\((.*)\)/)[1])
-		
-		imageFiles.forEach(imageFile => {
-			if (!imageMap[imageFile]) {
-				imageMap[imageFile] = [id]
-			} else if (!imageMap[imageFile].includes(id)) {
-				imageMap[imageFile].push(id)
-			}
-		});
+      .map(link => link.match(/\((.*)\)/)[1])
+    
+    imageFiles.forEach(imageFile => {
+      if (!imageMap[imageFile]) {
+        imageMap[imageFile] = [id]
+      } else if (!imageMap[imageFile].includes(id)) {
+        imageMap[imageFile].push(id)
+      }
+    });
     
     wordMaps[id] = wordMap;
     
@@ -131,25 +131,25 @@ async function main () {
   }
   writeFile(targetPath + 'wordMap.json', JSON.stringify(wordMaps, false, 2), 'utf8')
   
-	// b8r documentation.json format
+  // b8r documentation.json format
   const documentation = sections.reduce((chapters, section) => {
-  	const name = section.title
-  	const path = section.id + '.md'
-  	if (section.levels[1] === 0 || chapters.length === 0) {
-  		chapters.unshift({
-  			title: name,
-  			parts: [{
-  				name,
-  				path
-  			}]
-  		})
-  	} else {
-  		chapters[0].parts.push({
-				name,
-				path
-  		})
-  	}
-  	return chapters
+    const name = section.title
+    const path = section.id + '.md'
+    if (section.levels[1] === 0 || chapters.length === 0) {
+      chapters.unshift({
+        title: name,
+        parts: [{
+          name,
+          path
+        }]
+      })
+    } else {
+      chapters[0].parts.push({
+      name,
+      path
+      })
+    }
+    return chapters
   }, []).reverse()
   writeFile(targetPath + 'documentation.json', JSON.stringify(documentation, false, 2), 'utf8')
   
@@ -159,9 +159,9 @@ async function main () {
     const convertedFile = file.replace(/\.\w+$/, '.jpg')
     const destPath = targetPath + convertedFile
     if (imageMap[convertedFile] || imageMap[escape(convertedFile)]) {
-			exec(`sips -s format jpeg "${sourcePath}" --out "${destPath}"`)
+    exec(`sips -s format jpeg "${sourcePath}" --out "${destPath}"`)
     } else {
-    	console.log(file, 'is not used')
+      console.log(file, 'is not used')
     }
   })
   writeFile(targetPath + 'imageMap.json', JSON.stringify(imageMap, false, 2), 'utf8')
